@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rad USB Remapper Help</title>
+<script>
+(function () {
+  var theme = "auto";
+  try { theme = localStorage.getItem("remap-theme") || "auto"; } catch (e) {}
+  if (theme === "light" || theme === "dark") document.documentElement.setAttribute("data-theme", theme);
+})();
+</script>
+<style>
+:root { --bg:#f4f2ee; --panel:#fff; --ink:#1d1f23; --muted:#6b6f78; --line:#e2dfd8; --accent:#c2410c; --code:#efece6;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+:root { color-scheme: light dark; } :root[data-theme="light"] { color-scheme: light; } :root[data-theme="dark"] { color-scheme: dark; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#121315; --panel:#1b1d20; --ink:#e9e7e2; --muted:#9a9ea6; --line:#2e3136; --accent:#fb923c; --code:#2a2d32; } }
+:root[data-theme="dark"] { --bg:#121315; --panel:#1b1d20; --ink:#e9e7e2; --muted:#9a9ea6; --line:#2e3136; --accent:#fb923c; --code:#2a2d32; }
+.themebtn { position: fixed; top: 12px; right: 12px; font: 13px system-ui, sans-serif; background: var(--panel); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+.wrap { max-width: 860px; margin: 0 auto; padding: 28px 20px 60px; }
+h1 { font-size: 26px; margin: 0 0 4px; } .sub { color: var(--muted); margin: 0 0 24px; }
+h2 { font-size: 19px; margin: 34px 0 10px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 15.5px; margin: 20px 0 6px; }
+nav { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 18px; }
+nav ol { margin: 0; padding-left: 20px; columns: 2; } @media (max-width:600px){ nav ol { columns: 1; } }
+code, kbd { font-family: var(--mono); font-size: 13px; background: var(--code); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--code); padding: 12px 14px; border-radius: 8px; overflow-x: auto; font: 13px/1.5 var(--mono); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 8px 0; }
+th, td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; }
+.note { background: var(--panel); border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; }
+a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Rad USB Remapper — user guide</h1>
+<p class="sub">For the Adafruit Feather RP2040 with USB Type A Host and the Rad USB Remapper page.</p>
+
+<nav><ol>
+  <li><a href="#what">What it does</a></li>
+  <li><a href="#install">Setting up the board</a></li>
+  <li><a href="#connect">Opening the page and connecting</a></li>
+  <li><a href="#screen">The main screen</a></li>
+  <li><a href="#mapping">Remapping an input</a></li>
+  <li><a href="#actions">The actions</a></li>
+  <li><a href="#movement">Movement, scroll wheel and tilt</a></li>
+  <li><a href="#picture">The device picture and testing</a></li>
+  <li><a href="#profiles">Profiles and layers</a></li>
+  <li><a href="#perdevice">Profiles for each device</a></li>
+  <li><a href="#mousekeys">Mice whose buttons send keys</a></li>
+  <li><a href="#boardbuttons">Buttons on the board</a></li>
+  <li><a href="#pedal">Foot pedal</a></li>
+  <li><a href="#usbdevices">What your computer sees</a></li>
+  <li><a href="#save">Saving, import and export</a></li>
+  <li><a href="#settings">Settings</a></li>
+  <li><a href="#devicepanel">Device panel, names and battery</a></li>
+  <li><a href="#msc">The CIRCUITPY drive and updating</a></li>
+  <li><a href="#trouble">Troubleshooting</a></li>
+</ol></nav>
+
+<h2 id="what">1. What it does</h2>
+<p>The remapper sits between a USB mouse or keyboard and your computer. Plug the mouse or keyboard into the board's
+<b>USB-A</b> port and the board's <b>USB-C</b> port into the computer. Everything passes straight through, except the
+buttons and keys you remap. It works on any computer, with no software to install.</p>
+<p>Any mouse button, wheel direction, wheel tilt, keyboard key, media key or <a href="#boardbuttons">button wired to the
+board</a> can become a different key or shortcut, a mouse button, a media key, scrolling, pointer movement, typed text, a
+sequence of steps, a web page or app opening, a foot pedal press, a MIDI note, or a switch to another set of mappings. Pointer
+movement itself can be sped up, slowed down, flipped, turned into scrolling or switched off.</p>
+<p>Mappings are kept in <b>profiles</b> (up to 8 per device, each with up to 8 layers), stored on the board. They survive
+restarts and power loss, and the page is only needed to change them.</p>
+
+<h2 id="install">2. Setting up the board</h2>
+<ol>
+  <li>Install <b>CircuitPython 11</b> for “Adafruit Feather RP2040 with USB Type A Host” from circuitpython.org: hold
+    BOOT, tap RESET, and drag the <code>.uf2</code> file onto the <code>RPI-RP2</code> drive that appears.</li>
+  <li>Copy everything in the download's <code>CIRCUITPY</code> folder to the root of the <code>CIRCUITPY</code> drive:
+    <code>code.py</code>, <code>boot.py</code> and the <code>.mpy</code> files. Don't copy the <code>source</code> folder.
+    No libraries are needed, except one for the optional <a href="#oled">status display</a>.</li>
+  <li>Press the board's <b>RESET</b> button once.</li>
+</ol>
+<p>To install a newer version later, use <a href="#updatemode">Update mode</a>: the drive is otherwise read-only to your computer.</p>
+
+<h2 id="connect">3. Opening the page and connecting</h2>
+<p>Open <code>remapper.html</code> in desktop <b>Chrome, Edge or Opera</b> (Firefox and Safari can't connect to the board).
+Opening the file straight from your disk works; if your browser blocks that, serve the folder locally (e.g.
+<code>python -m http.server</code>, then open <code>http://localhost:8000/remapper.html</code>).</p>
+<ol>
+  <li>Click <b>Connect</b> in the dark top bar.</li>
+  <li>The first time, the browser lists serial ports: choose the board. From then on the page connects by itself when it
+    opens and whenever the board is plugged in. (Some browsers forget the board for pages opened from a file; then click
+    Connect once per visit.) <b>Shift-click</b> Connect to choose again from every serial port.</li>
+  <li>The pill turns green and shows the device on the USB-A port, e.g. <i>8-button mouse · connected</i>.</li>
+</ol>
+<p>You can edit, import and export mappings without a board; you only need a connection to apply them. After you click
+<b>Disconnect</b>, the page waits for you to click Connect again. The board can only be open in one tab or program at a time.</p>
+<p>Sometimes two ports are listed (in Update mode, or after starting the board with the recovery jumper). Either one works.</p>
+<h3>“No answer from the remapper firmware”</h3>
+<p>The firmware isn't running. Check the <a href="#log">debug log</a> for errors, make sure all the files are on the drive
+(<code>boot.py</code> must be named exactly that, not <code>boot.py.txt</code> or <code>boot (1).py</code>), and press RESET.</p>
+
+<h2 id="screen">4. The main screen</h2>
+<table>
+  <tr><th>Area</th><th>What it holds</th></tr>
+  <tr><td>Top bar</td><td>The connection pill (once connected, click it for the <a href="#devicepanel">device panel</a>), the
+    battery level when the device reports one, how many inputs the profile remaps, the theme button (Auto / Light / Dark), and
+    the gear ⚙ for <a href="#settings">Settings</a>. A dot at the gear's top right means the board needs a restart; a dot at
+    its lower right (amber or red) means new warnings or errors in the <a href="#log">debug log</a>.</td></tr>
+  <tr><td>Profiles (left)</td><td>Your <a href="#profiles">profiles</a>, and whose device they belong to.</td></tr>
+  <tr><td>Middle</td><td>The profile's name and layers, the <a href="#picture">device picture</a> with a numbered marker for each
+    input, and the numbered list of inputs.</td></tr>
+  <tr><td>Inspector (right)</td><td>What the selected input does, and the <b>Apply</b> button.</td></tr>
+</table>
+<p>Select an input by clicking its marker on the picture or its row in the list. Each row shows the input's name and what it
+does: <b>bold blue</b> for a remapped input, plain gray for one that does what it normally does. A wide device such as a keyboard
+gets the full width of the page, with the list below the picture.</p>
+<h3>Which inputs are listed</h3>
+<p>To remap a button or key, <b>press it once</b> and it appears in the list. Inputs mapped in any profile are always listed,
+and the page remembers the inputs it has seen for each device in this browser.</p>
+<table>
+  <tr><th>Input</th><th>Listed</th></tr>
+  <tr><td>Left, Right, Wheel press</td><td>Always.</td></tr>
+  <tr><td>Wheel up / down, Tilt left / right</td><td>When the device has a wheel / a tilting wheel.</td></tr>
+  <tr><td>Other mouse buttons (Thumb back / forward, Buttons 7–16)</td><td>Once pressed.</td></tr>
+  <tr><td>Movement</td><td>For mice and trackballs.</td></tr>
+  <tr><td>Keys</td><td>Once pressed: under <i>Keys sent by the mouse</i> (<a href="#mousekeys">see below</a>) or <i>Keyboard keys</i>.</td></tr>
+  <tr><td>Media keys</td><td>Once pressed, under <i>Media keys</i> (volume, play/pause and so on).</td></tr>
+  <tr><td>Buttons on the board</td><td>Once pressed, under <i>Buttons on the board</i> (<a href="#boardbuttons">see below</a>).</td></tr>
+</table>
+<h3 id="listorder">Reordering and removing inputs</h3>
+<ul>
+  <li><b>Reorder:</b> drag a row by the dots on its left, or select it and press <kbd>Alt</kbd>+<kbd>↑</kbd> /
+    <kbd>Alt</kbd>+<kbd>↓</kbd>. Rows move within their group, and the picture's numbers follow.</li>
+  <li><b>Remove:</b> select an unmapped input and click <b>Remove from list</b> (or press <kbd>Delete</kbd> on its row). It still
+    works normally and comes back as soon as you press it; <b>Show … removed inputs</b> under the list brings them all back.</li>
+  <li>The order and removed inputs are kept for each device in this browser, and included in Export.</li>
+</ul>
+<p class="note"><b>Live check:</b> while the page is connected, pressing a button or key flashes its number on the picture and
+in the list, and the strip under the picture shows what it did, e.g. <code>Wheel press → Close tab</code>. Moving the mouse
+lights up <b>Movement</b>.</p>
+
+<h2 id="mapping">5. Remapping an input</h2>
+<ol>
+  <li>Select the input on the picture or in the list.</li>
+  <li>In the inspector, choose an action group with the tab bar (<b>Button</b>, <b>Mouse</b>, <b>Control</b>, <b>Multi</b>,
+    <b>Basic</b>), then the action. A short description of the group, then of the chosen action, shows under the buttons.</li>
+  <li>Set the action up. The input is remapped as soon as you choose something: a key, a media key, a profile, a setting.
+    Choosing a group or an action on its own changes nothing. <b>Off</b>, <b>Unlatch</b>,
+    <b>Cycle</b> and <b>Macro</b> have a button to click; <b>Text</b>, <b>Web</b> and <b>App</b> remap the input as soon as you type.</li>
+  <li>Click <b>Apply</b> to send your changes to the board and save them.</li>
+</ol>
+<p>The inspector opens on the group of the input's current action; a dot marks that group while you look at another one.</p>
+<table>
+  <tr><th>Group</th><th>What it's for</th></tr>
+  <tr><td>Button</td><td>Makes the input act like a single button: a keyboard key or shortcut, a media key, a mouse button, or a
+    foot pedal. It's held as long as you hold the input, or until you press it again if set to Latched.</td></tr>
+  <tr><td>Mouse</td><td>Uses the input to scroll, or to move the pointer by itself. Configure changes how your mouse's own movement
+    behaves, such as slower, one axis only, or scrolling instead.</td></tr>
+  <tr><td>Control</td><td>Changes how the remapper behaves rather than sending anything: switch profiles, turn on a layer, or release
+    everything latched. MIDI is here too, for sending notes to music software.</td></tr>
+  <tr><td>Multi</td><td>Does several things from one press. It can type text, play a macro, step through a cycle of actions, or open
+    a web page or app.</td></tr>
+  <tr><td>Basic</td><td>Default leaves the input doing what it normally does, which is also how you undo a mapping. Off disables it
+    completely.</td></tr>
+</table>
+<h3>Undoing a mapping</h3>
+<p>Choose <b>Default</b> (Basic group), or click <b>Restore default</b> at the bottom of the inspector. On a layer, the button is
+<b>Use Base mapping</b> and returns the input to its Base layer mapping. To drop every change you haven't applied, use
+<b>Reload from the board</b> in the menu next to Apply.</p>
+<h3 id="latch">When: While held or Latched</h3>
+<p>Keys, Mouse, Media, Pedal, MIDI notes and controllers, Pointer and Configure have a <b>When</b> setting at the top:</p>
+<ul>
+  <li><b>While held</b>: the action is on while you hold the input.</li>
+  <li><b>Latched (toggle)</b>: one press turns it on and it stays on after you let go; the next press turns it off. For example,
+    a side button as a latched Shift, a latched left button for dragging without holding, or a latched pedal.</li>
+</ul>
+<p>Everything latched is let go when you press an <b>Unlatch</b> input, switch profile, apply mappings, unplug the device or
+restart the board. Switching layer keeps latches. The <a href="#oled">status display</a> shows <b>L</b> before the profile name
+while anything is latched.</p>
+<h3>Label and options</h3>
+<p>Below each action's settings:</p>
+<ul>
+  <li><b>Label (optional)</b>: a name of up to 24 characters shown in the list instead of the action, e.g. “Close tab”.</li>
+  <li><b>Repeat while held</b> (Keys, Mouse, Media): fires the action again every 50 ms until you let go.</li>
+  <li><b>Also send the original click</b>: does the new action <i>and</i> what the input normally does, e.g. the right button
+    still right-clicks and also presses a pedal.</li>
+  <li><b>Haptic pulse</b>: also gives a pulse on a Logitech mouse with haptics (e.g. MX Master 4) when the input is pressed.
+    <b>Try</b> plays it. Shown while such a mouse is attached, or always if you turn that on under Settings › Feedback ›
+    <a href="#haptics">Mouse haptics</a>. To make an input <i>only</i> pulse, use this with the action <b>Off</b>.</li>
+</ul>
+<p>Choosing another action keeps the label and options.</p>
+<p class="note"><b>Example: thumb buttons as copy and paste.</b> Select <i>Thumb back</i> › Button › Keys › <b>Record new
+shortcut</b> › press <kbd>Ctrl</kbd>+<kbd>C</kbd>. Select <i>Thumb forward</i> and record <kbd>Ctrl</kbd>+<kbd>V</kbd>. Click
+<b>Apply</b>. (On a Mac use <kbd>Cmd</kbd>, which records as GUI.)</p>
+
+<h2 id="actions">6. The actions</h2>
+<p>An action whose output is turned off in <a href="#usbdevices">What your computer sees</a> isn't offered (e.g. no Pedal
+without the foot pedal). A mapping that needs an output that's off is marked ⚠ and does nothing until you turn the output back on.</p>
+
+<h3>Button group</h3>
+<table>
+  <tr><th>Action</th><th>How to use it</th></tr>
+  <tr><td>Keys</td><td>Sends a keyboard key or shortcut, such as A, Enter or Ctrl+C. Click <b>Record new shortcut</b> and press it;
+    pressing only modifiers and letting go records them on their own (e.g. a button that holds Shift). For shortcuts your computer
+    catches first (such as <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Del</kbd>), open <b>Choose keys by hand</b>, tick the modifiers
+    and pick a key.</td></tr>
+  <tr><td>Media</td><td>Sends a media key: volume, mute, play/pause, next track, or a launcher key such as Calculator or Browser home.</td></tr>
+  <tr><td>Mouse</td><td>Sends a mouse button click: left, right, middle, back, forward or buttons 6–8.</td></tr>
+  <tr><td>Pedal</td><td>Presses the left, center or right pedal (or left + right) of the board's <a href="#pedal">foot pedal</a>.</td></tr>
+</table>
+<p class="note"><b>Recording tip:</b> Record reads the key your browser receives. A key pressed on a keyboard that goes through the
+board, and is already remapped, records as its remapped key. When in doubt, record with your computer's own keyboard or choose
+keys by hand.</p>
+
+<h3>Mouse group</h3>
+<table>
+  <tr><th>Action</th><th>How to use it</th></tr>
+  <tr><td>Scroll</td><td>Scrolls in the chosen <b>Direction</b> (up, down, left or right) on each press. <b>Steps per press</b> sets
+    how far, from ×1 (one notch of a scroll wheel) to ×10. Holding the input keeps scrolling.</td></tr>
+  <tr><td id="pointer">Pointer</td><td>Moves the pointer by itself:
+    <ul>
+      <li><b>Direction</b>: one of eight arrows.</li>
+      <li><b>On each press</b>: how far it moves at once, about in pixels (0 = none). A wheel notch counts as a press: map
+        <i>Wheel up</i> to ↑ and <i>Wheel down</i> to ↓ to move the pointer with the wheel.</li>
+      <li><b>While held</b>: <i>Only the step</i>, or <i>Keeps moving</i> at a <b>Speed</b> (counts per second), reaching full
+        speed over the <b>Speeds up over</b> time, so short holds aim finely and long holds cross the screen.</li>
+    </ul>
+    Several held at once add up, so four buttons mapped to the four arrows work like a joystick. Latched, the pointer keeps
+    drifting until you press the button again.</td></tr>
+  <tr><td id="movechange">Configure</td><td>Changes how your mouse's own movement behaves while it's on:
+    <ul>
+      <li><b>Pointer</b>: <i>As the profile</i>, <i>Moves</i> (moves even when the profile's movement is Off), or <i>Scrolls</i>.</li>
+      <li><b>Speed</b>: <i>Unchanged</i>, or <i>Change</i> to a percentage of the profile's speed (10–400 %), e.g. 25 % for precise
+        aiming. It applies to Pointer movement too.</li>
+      <li><b>Axes</b>: <i>Normal</i>, <i>Flipped</i> or <i>Off</i> for left / right and up / down, and <b>Swap X and Y</b>.</li>
+    </ul>
+    If several are on at once, the last one pressed counts; letting go of it brings back the one before.</td></tr>
+</table>
+<p class="note"><b>Example: pointer locked, with one button for left / right only.</b> Set the profile's
+<a href="#movement">Movement</a> to <b>Off</b>. Map a button to Configure with When <b>Latched</b>, Pointer <b>Moves</b> and
+up / down <b>Off</b>. Press it and the pointer moves left and right only; press it again and it's locked.</p>
+
+<h3>Control group</h3>
+<table>
+  <tr><th>Action</th><th>How to use it</th></tr>
+  <tr><td>Profile</td><td>Switches to the <b>next</b> or <b>previous</b> profile, or to one you choose, or uses one only
+    <b>while held</b>. See <a href="#switching">switching profiles</a>.</td></tr>
+  <tr><td>Layer</td><td>Switches to the next or previous layer of the profile, or to one you choose, or uses one only while held.
+    See <a href="#layers">layers</a>.</td></tr>
+  <tr><td>Unlatch</td><td>Releases everything that is currently <a href="#latch">latched</a>: keys, buttons, pedals, MIDI notes and
+    movement changes.</td></tr>
+  <tr><td id="midi">MIDI</td><td>Sends a MIDI message on a channel (1–16) to music software. Needs MIDI turned on in
+    <a href="#usbdevices">What your computer sees</a>.
+    <ul>
+      <li><b>Note</b>: plays while the input is held, at the chosen velocity (60 = middle C).</li>
+      <li><b>Controller (CC)</b>: set to the chosen value while held, back to 0 on release (e.g. 64 = sustain, 7 = volume).</li>
+      <li><b>Program change</b>: selects program 1–128.</li>
+    </ul></td></tr>
+</table>
+
+<h3>Multi group</h3>
+<table>
+  <tr><th>Action</th><th>How to use it</th></tr>
+  <tr><td>Text</td><td>Types a phrase or block of text (up to 2,000 characters) on each press. New lines are typed as Enter.
+    It types as on a <b>US keyboard layout</b>: with another layout some characters come out differently, and characters a US
+    keyboard can't type (accents, emoji) are shown in red and left out. Typing takes about 12 ms per character; pressing the
+    button again while it types does nothing.</td></tr>
+  <tr><td id="cycle">Cycle</td><td>Steps through a list of actions, one per press, then starts again. Click <b>Make a cycle</b>:
+    the current action becomes step 1. Click a step to set it up with the same tabs as any input; <b>↑ ↓</b> reorder, <b>✕</b>
+    removes, <b>+ Add step</b> adds (up to 8). <b>Back to step 1 after … s idle</b> restarts the cycle after a pause (0 = never).
+    Profile and layer switches can't be steps.</td></tr>
+  <tr><td id="macro">Macro</td><td>Plays a list of steps in order on one press. Click <b>Make a macro</b>, then edit the steps as
+    in a cycle (up to 16), plus <b>Wait</b> steps (0.01 to 10 s) to give the computer time, e.g. for a window to open. Each step is
+    a short tap; a text step is typed in full before the next. The macro runs to the end even if you let go, and pressing it again
+    while it runs does nothing. Profile and layer switches, cycles and other macros can't be steps.</td></tr>
+  <tr><td id="web">Web</td><td>Opens a web page. Type the <b>Address</b> (e.g. <code>example.com/docs</code>; <code>https://</code>
+    is added if needed) and choose how to open it:
+    <ul>
+      <li><b>Win+R</b> (Windows): the Run box, in your default browser.</li>
+      <li><b>Spotlight</b> (Mac).</li>
+      <li><b>Ctrl+T</b> / <b>⌘T</b>: a new tab in the browser that's in front.</li>
+      <li><b>Browser</b> (Windows, Linux): the Browser home key opens your browser, then the address goes in its address bar.
+        Needs Media keys on in <a href="#usbdevices">What your computer sees</a>. If your browser starts slowly, the first
+        press may only open it.</li>
+    </ul></td></tr>
+  <tr id="app"><td>App</td><td>Opens an application by name, e.g. <code>Calculator</code>. Choose <b>Start menu</b> (Windows),
+    <b>Spotlight</b> (Mac) or <b>Win+R</b> (Windows; only programs it knows by name, such as <code>notepad</code> or
+    <code>chrome</code>). The first match opens, so use the app's full name.</td></tr>
+</table>
+<p>Web and App type their address or name like Text, so only plain US-keyboard characters can be used. If nothing opens or the wrong
+thing does, the shortcut may be turned off on your computer, or it needs more time: a Macro with a longer Wait does the same job.</p>
+
+<h3>Basic group</h3>
+<table>
+  <tr><th>Action</th><th>How to use it</th></tr>
+  <tr><td>Default</td><td>The input does what it normally does. On a layer, it uses the Base layer's mapping instead.</td></tr>
+  <tr><td>Off</td><td>Disables the input completely, so pressing it does nothing.</td></tr>
+</table>
+
+<h2 id="movement">7. Movement, scroll wheel and tilt</h2>
+<h3>Movement</h3>
+<p>Select the <b>Movement</b> row to set how the profile's pointer movement works:</p>
+<ul>
+  <li><b>Move pointer</b> (normal), <b>Scroll</b> (moving the mouse scrolls), or <b>Off</b> (buttons still work).</li>
+  <li><b>Speed</b>: 10 % to 400 %.</li>
+  <li><b>Invert X</b>, <b>Invert Y</b> and <b>Swap X and Y</b>, e.g. for a trackball held sideways.</li>
+</ul>
+<p>To change movement only while a button is held or latched, use the <a href="#movechange">Configure</a> action.</p>
+<h3>Scroll wheel</h3>
+<p><b>Wheel up</b> and <b>Wheel down</b> can be remapped like buttons: each notch is one press. To reverse scrolling, map
+Wheel up to Scroll down and Wheel down to Scroll up.</p>
+<h3>Wheel tilt</h3>
+<p>When a tilt input is selected, <b>Tilt acts like a held button</b> sets what a remapped tilt does:</p>
+<ul>
+  <li><b>Ticked</b> (default): holding the wheel tilted holds the action once, like holding a button. It's released when the tilt
+    stops for the <b>Release after … ms</b> time (default 300 ms). If the action flickers while you hold the tilt, raise this time;
+    if it lingers after you let go, lower it.</li>
+  <li><b>Unticked</b>: the action repeats for as long as the wheel is tilted.</li>
+</ul>
+<p>These settings belong to the profile. Unmapped tilt scrolls sideways as usual.</p>
+
+<h2 id="picture">8. The device picture and testing</h2>
+<p>The picture shows a numbered marker for each input; click one to select it. The page picks an outline to suit the device:
+a standard mouse, a mouse with a side grid of buttons, a trackball, a vertical mouse, or a keypad / keyboard. A keyboard with more
+than 24 keys is drawn as a wide grid.</p>
+<h3>Arrange</h3>
+<p>Click <b>Arrange</b> in the picture's header to make the picture match your device. The header then holds:</p>
+<ul>
+  <li>the <b>shape</b> menu;</li>
+  <li><b>Photo ▾</b>: <i>Use a photo…</i> puts a photo of your own device behind the markers (it stays on your computer), and
+    <i>Remove photo</i>;</li>
+  <li><b>↺</b>: puts every marker back where the shape places it;</li>
+  <li><b>?</b>: shows the tip again;</li>
+  <li><b>Done</b>.</li>
+</ul>
+<p>Drag a marker to where that button really is, or select it and use the arrow keys (with Shift to move further). Inputs that
+aren't on the picture appear as numbered chips in the strip below it: drag a chip onto the picture (or select it and press Enter)
+to place it, and drag a marker onto the strip (or press Delete) to take it off. The arrangement is saved for each device in
+this browser, and included in Export.</p>
+<h3 id="testpad">Testing without sending</h3>
+<p>Move the pointer onto the device picture: the card turns blue and the strip reads <i>Testing — nothing is sent</i>. While the
+pointer is on the picture, presses on the device plugged into the board aren't sent to the computer; the strip shows what they
+would do instead, e.g. <code>Thumb back → Type “Best regards,” (not sent)</code>. Move off the picture to go back to normal.</p>
+<ul>
+  <li>Pointer movement always works normally, so you can always move off the picture.</li>
+  <li>Profile and layer buttons still switch, so you can hold a layer button and see what the other buttons do on that layer.
+    Cycles move on to their next step without sending anything.</li>
+  <li>Testing pauses while the pointer is on a marker, so you can click it, and is off while you arrange the picture.</li>
+  <li>Your computer's own keyboard and touchpad aren't affected.</li>
+  <li>If the page closes or loses the board while testing, the board goes back to normal within about 1.5 seconds.</li>
+</ul>
+
+<h2 id="profiles">9. Profiles and layers</h2>
+<p>A <b>profile</b> is a complete set of mappings, with its own movement and tilt settings and LED color. Each device can have up
+to 8, e.g. one for work and one for a game.</p>
+<ul>
+  <li>Click a profile in the <b>Profiles</b> sidebar to edit it. The one the board is using says <i>Active on device</i>
+    (<i>Held now</i> while a hold button is held).</li>
+  <li>Click the profile's name to rename it. <b>+ New profile</b> adds an empty one, <b>Duplicate</b> copies the one you're
+    editing, <b>Delete</b> removes it, and <b>Reset profile</b> removes all its mappings.</li>
+  <li><b>Make active</b> makes the board use the profile you're editing.</li>
+  <li><b>LED color</b> sets the color of the board's light while the profile is in use. Pick a quick color or <i>Custom
+    color…</i>. The same window has the light's <b>Brightness</b>, shared by all profiles. The board's light shows the color while
+    you pick, so you can see how it looks.</li>
+</ul>
+<p>Adding, copying, deleting and renaming profiles and layers is saved to the board by itself. Changes to what inputs do need
+<b>Apply</b>.</p>
+<p class="note">Profiles don't change by themselves when you switch programs on your computer: use a profile button.</p>
+<h3 id="switching">Switching profiles with a button</h3>
+<p>Map an input to <b>Profile</b> (Control group) and choose <b>Next profile</b>, <b>Previous profile</b> (both wrap around) or a
+specific profile. Put the switch button in every profile, so you can always switch on or back.</p>
+<ul>
+  <li>The new profile applies from the next press on. Held keys and buttons are released, except latched pedals.</li>
+  <li>The board remembers the active profile, even after a restart.</li>
+</ul>
+<h3>Using a profile while a button is held</h3>
+<p>In <b>Profile</b>, choose a profile under <i>Hold</i> (<b>Use … while held</b>). While the button is held, that profile is
+active; let go and you're back where you were, like a Shift key for your whole mapping.</p>
+<ul>
+  <li>The hold button keeps working to switch back, whatever the held profile maps it to.</li>
+  <li>To reach a third profile, map a second hold button in the held profile. Releasing either goes back step by step.</li>
+  <li>A normal switch pressed during a hold takes over, and letting go of the hold button no longer switches back.</li>
+  <li>A held profile isn't remembered: after a restart, or if the device is unplugged while holding, the board is on your normal
+    profile.</li>
+</ul>
+<h3 id="layers">Layers</h3>
+<p>Each profile can have up to 8 layers: <b>Base</b> plus up to 7 more. A layer changes only the inputs you remap on it; every
+other input does what it does on Base. Use a layer when a few buttons should do something else for a moment (e.g. “hold the
+thumb button for editing keys”), and a profile for a completely different setup.</p>
+<ul>
+  <li>The <b>Layers</b> bar above the list shows the profile's layers; click one to edit it. <b>+ Add layer</b> adds one; any layer
+    except Base can be renamed and deleted. A green dot marks the layer the board is using.</li>
+  <li>On a layer, inputs you haven't remapped show their Base mapping in gray italics. Remap one to change it on that layer only.</li>
+  <li>To move between layers, map an input to <b>Layer</b>: <b>Next layer</b>, <b>Previous layer</b>, a specific layer, or a layer
+    only <b>while held</b>. Put the layer button on Base: every layer uses it unless you remap it there.</li>
+  <li>Movement, tilt and LED color belong to the profile and are the same on every layer.</li>
+  <li>Switching profile, and restarting the board, start on the Base layer. Apply keeps the layer you're on.</li>
+</ul>
+<h3>The board's light</h3>
+<table>
+  <tr><th>Light</th><th>Meaning</th></tr>
+  <tr><td>Red</td><td>Nothing usable is plugged into the USB-A port.</td></tr>
+  <tr><td>Green for 1.5 seconds</td><td>A mouse or keyboard was just plugged in.</td></tr>
+  <tr><td>The profile's color</td><td>The board is remapping, using that profile.</td></tr>
+  <tr><td>Two red flashes, over and over</td><td>The firmware stopped with an error (see <a href="#trouble">Troubleshooting</a>).</td></tr>
+</table>
+<p>Avoid pure red as a profile color, since it looks like “no device”. To adjust how colors look on the light, see
+<a href="#ledbalance">LED color balance</a>.</p>
+
+<h2 id="perdevice">10. Profiles for each device</h2>
+<p>Each mouse or keyboard has its own profiles. When you plug in a different device, the board switches to its profiles and the
+page shows them. The box at the top of the Profiles sidebar says whose profiles you're editing.</p>
+<ul>
+  <li>A device used for the first time starts with one empty profile, so everything works as normal.</li>
+  <li><b>Copy profiles from…</b> (in that box) loads another device's profiles; click Apply to keep them.</li>
+  <li><b>Saved on the board</b> lists every device with saved profiles, with a <b>Delete</b> button for each.</li>
+  <li>Changes made before any device is plugged in go to the first device plugged in (click Apply to save them).</li>
+  <li>Mice paired to the same receiver share its profiles. With two devices plugged in at once, the first one's profiles are used.</li>
+  <li>Edits you haven't applied are dropped when a different device is plugged in (unplugging and replugging the same device
+    keeps them). If the page had unapplied edits when it connected, a blue bar offers <b>Put my edits back</b>.</li>
+  <li>Board settings (light, display, haptics, names) are shared by all devices.</li>
+</ul>
+
+<h2 id="mousekeys">11. Mice whose buttons send keys</h2>
+<p>Some mice with many buttons send some of them as keyboard keys; a Razer Naga's 12-button side plate, for example, types
+<kbd>1</kbd>…<kbd>0</kbd>, <kbd>-</kbd> and <kbd>=</kbd>. These are listed as <b>Keys sent by the mouse</b>, separately from
+<b>Keyboard keys</b>, so remapping the mouse's <kbd>1</kbd> doesn't change the <kbd>1</kbd> on a keyboard plugged in at the same
+time. Unmapped, they keep typing their key. Press each side button once to add it to the list.</p>
+<ul>
+  <li>Button assignments saved in the mouse with its own software (e.g. Razer Synapse) still apply.</li>
+  <li>For a wireless mouse, use its receiver: a mouse charging over its cable from the board can draw more power than the port gives.</li>
+</ul>
+
+<h2 id="boardbuttons">12. Buttons on the board</h2>
+<p>You can add your own buttons to the board and remap them like any other input. The board's <b>BOOT</b> button works too.</p>
+<ul>
+  <li><b>Wiring:</b> connect a button between a free pin and <b>GND</b>; no resistor is needed. Free pins: <b>A0–A3, D24, D25, SCK,
+    MO, MI, RX, TX, D4, D6, D9, D10, D11, D12</b>. Leave <b>SDA/SCL</b> (status display), <b>D5</b> (recovery jumper) and <b>D13</b>
+    alone.</li>
+  <li>A button appears in the list under <i>Buttons on the board</i> the first time you press it, named after its pin (e.g.
+    <i>Board button D9</i>). Until you map it, it does nothing.</li>
+  <li>Board-button mappings are part of each device's profiles, so they only work with a device plugged in, and can do different
+    things with different devices.</li>
+  <li>Holding BOOT while the board starts opens the bootloader instead; tap RESET to start normally.</li>
+  <li>To use the pins for something else, turn off Settings › Board › <i>Advanced: buttons on the board's pins</i>.</li>
+</ul>
+
+<h2 id="pedal">13. Foot pedal</h2>
+<p>The board can act as a three-pedal USB transcription foot pedal, so any button or key can press the <b>left</b>, <b>center</b>
+or <b>right</b> pedal in programs that support USB foot pedals.</p>
+<ol>
+  <li>In Settings › Board › <b>What your computer sees</b>, tick <b>Foot pedal</b> and click <b>Reboot now</b>. With Keyboard and
+    Mouse also ticked, your mouse and keyboard keep working; with Foot pedal on its own, the board is only a pedal.</li>
+  <li>Select an input, choose <b>Button › Pedal</b>, pick the pedal, and set <b>When</b>:
+    <ul>
+      <li><b>While held</b>: the pedal is down while you hold the button.</li>
+      <li><b>Latched (toggle)</b>: one press puts the pedal down and it stays down; the next press lifts it.</li>
+    </ul>
+    Click <b>Apply</b>.</li>
+  <li>In your transcription program, choose its USB foot pedal option, as you would for a real pedal, and use its test screen
+    to check the pedals.</li>
+</ol>
+<p class="note"><b>Example:</b> a side button as <i>Center pedal, Latched</i> starts and stops playback with single clicks; two
+more buttons as <i>Left</i> and <i>Right pedal, While held</i> rewind and fast-forward while held. A pedal is down while any button
+holds it or it's latched.</p>
+<p>Latched pedals are lifted when you press an Unlatch input, apply mappings, unplug the device or restart the board. They stay
+down when you switch profile.</p>
+<h3>If your program doesn't find the pedal</h3>
+<p>Try these in Settings › Board, one at a time, rebooting after each:</p>
+<ul>
+  <li>Turn <b>Media keys</b> off.</li>
+  <li>Set <b>Mouse type</b> to <b>Standard</b>.</li>
+  <li>Give the board a different <b>Device name</b>.</li>
+  <li>Tick <b>Foot pedal</b> on its own.</li>
+</ul>
+<p>Close other programs that might be using the pedal. On Windows, removing the board once in Device Manager after a change can help.
+To go back to normal, untick Foot pedal, tick Keyboard, Mouse and Media keys, and reboot. If you can't reach the page, use the
+<a href="#recovery">recovery jumper</a>.</p>
+
+<h2 id="usbdevices">14. What your computer sees</h2>
+<p>Settings › Board › <b>What your computer sees</b> sets what the board shows up as on the computer. Click the tiles to turn each
+one on or off, then click <b>Reboot now</b>.</p>
+<table>
+  <tr><th>Tile</th><th>Needed for</th></tr>
+  <tr><td>Keyboard</td><td>Keys, Text, Web, App.</td></tr>
+  <tr><td>Mouse</td><td>Mouse buttons, Scroll, Pointer, and your mouse's movement. <b>Mouse type</b>: <i>High-resolution</i>
+    (default) or <i>Standard</i>, for programs that have trouble with the high-resolution mouse.</td></tr>
+  <tr><td>Media keys</td><td>Media, and Web's Browser option.</td></tr>
+  <tr><td>Foot pedal</td><td>Pedal (<a href="#pedal">foot pedal</a>).</td></tr>
+  <tr><td>MIDI</td><td><a href="#midi">MIDI</a>. Music software lists the board as a MIDI input.</td></tr>
+</table>
+<ul>
+  <li><b>Manufacturer name</b> and <b>Device name</b> set the names the computer shows for the board (up to 126 plain characters
+    each). Leave them empty for the defaults; the device name is then <i>Rad USB Remapper</i>.</li>
+  <li><b>Advanced: USB ID</b> sets your own vendor and product ID (in hexadecimal, e.g. <code>1209</code> / <code>0001</code>).
+    Leave them empty for the board's own. With Foot pedal on, the ID is always the pedal's and can't be changed. Your computer
+    treats a new ID as a new device, so drivers may install again. Don't use another product's ID. If the board isn't in the
+    Connect list after changing the ID, <b>Shift-click Connect</b>.</li>
+  <li>Turning off both Keyboard and Mouse asks you first: the computer then gets no clicks or keys from the board.</li>
+  <li>On Windows, after changing these, removing the board once in Device Manager can help the change show up.</li>
+</ul>
+
+<h2 id="save">15. Saving, import and export</h2>
+<table>
+  <tr><th>Button</th><th>Where</th><th>What it does</th></tr>
+  <tr><td>Apply</td><td>Inspector</td><td>Sends all profiles to the board, uses them right away and saves them.</td></tr>
+  <tr><td>Apply without saving</td><td>Apply ▾ menu</td><td>Uses them right away without saving; a restart goes back to the saved
+    ones. A safe way to try things.</td></tr>
+  <tr><td>Reload from the board</td><td>Apply ▾ menu</td><td>Drops your unapplied changes and shows what the board has.</td></tr>
+  <tr><td>Export… / Import…</td><td>Apply ▾ menu</td><td>Saves all profiles (with picture arrangements) to a <code>.json</code> file,
+    or loads one. Import only fills the page: check it, then click Apply. Text actions in an imported file are listed in the log
+    so you can see what they'd type.</td></tr>
+  <tr><td>Erase all profiles</td><td>Apply ▾ menu</td><td>Deletes the attached device's profiles from the board, right away.</td></tr>
+</table>
+<p><i>Unsaved changes</i> shows next to Apply while the page differs from what you last applied. Applying releases any key or
+button being held, and restarts cycles at step 1.</p>
+<p><b>Size limit:</b> a device's profiles can use about 16 KB of the board's memory: roughly 400–500 mappings, or fewer with long
+texts (a 2,000-character text takes about 4 KB). The log shows how much is used after each save; if the profiles don't fit, the
+board says so and keeps the old ones.</p>
+
+<h2 id="settings">16. Settings</h2>
+<p>The gear ⚙ opens Settings. Close it with <b>Close</b>, a click outside or <kbd>Esc</kbd>. Settings that don't apply right now
+are hidden.</p>
+<ul>
+  <li><b>Board:</b> <a href="#usbdevices">What your computer sees</a>, the <a href="#msc">CIRCUITPY drive</a>, Update mode, buttons
+    on the board's pins, and <b>Reboot board</b>. Most of these take effect after a restart.</li>
+  <li><b>Feedback:</b> LED color balance, the status display, mouse haptics and mouse lighting.</li>
+  <li><b>Troubleshooting:</b> the debug log and its tools.</li>
+</ul>
+<h3 id="ledbalance">LED color balance</h3>
+<p>Adjusts how profile colors look on the board's light: <b>Red / Green / Blue</b> balance and <b>gamma correction</b>.
+(<b>Brightness</b> is in each profile's LED color window.) Changes show on the light while you drag. To tune the balance, give a
+profile the color white and lower whichever channel the light looks tinted toward. <b>Reset to recommended</b> puts everything
+back. At low brightness, similar colors can look the same and very dark colors may not light at all.</p>
+<h3 id="oled">Status display</h3>
+<p>Plug Adafruit's 0.91" <b>SSD1306 128x32</b> OLED into the board's STEMMA QT connector. It shows the device's name and battery
+on the top line, and the active profile and layer on the bottom line (with <b>L</b> in front while anything is latched).</p>
+<ul>
+  <li><b>Setup:</b> from the <a href="https://circuitpython.org/libraries">CircuitPython library bundle</a> for your CircuitPython
+    version, copy <code>adafruit_displayio_ssd1306.mpy</code> into <code>CIRCUITPY/lib</code> (using
+    <a href="#updatemode">Update mode</a>).</li>
+  <li>You can plug the display in while the board is running; it's found within 10 seconds.</li>
+  <li>Settings › Feedback › <b>Status display</b> shows whether it was found, and has <b>Upside down (180°)</b> for a display
+    mounted the other way round.</li>
+</ul>
+<h3 id="haptics">Mouse haptics</h3>
+<p>For Logitech mice with a haptic motor, such as the MX Master 4. Shown while such a mouse is attached:</p>
+<ul>
+  <li><b>Pulse when the profile or layer changes</b>: choose the pulse, or <b>No pulse</b>.</li>
+  <li><b>A different pulse for each profile and layer</b>, so you can feel which one you're on.</li>
+  <li><b>Haptics on</b> and <b>Strength</b>, stored in the mouse.</li>
+  <li><b>Try</b> buttons play each pulse.</li>
+  <li><b>Always show the Haptic pulse option on mappings</b>, to set up pulses while the mouse isn't attached.</li>
+</ul>
+<p>A sleeping mouse can't pulse; move it to wake it.</p>
+<h3 id="mouselight">Mouse lighting</h3>
+<p><b>Match the mouse's own lighting to the profile color</b> sets the RGB lighting of a Logitech or Razer mouse to the active
+profile's color, so the mouse shows which profile you're on. <b>Brightness</b> sets how bright.</p>
+<ul>
+  <li>The color is set when the mouse is plugged in, when you switch profile, and when you use the mouse again after a pause.</li>
+  <li>Close <b>Logitech G HUB</b>, <b>Razer Synapse</b> or other lighting software, or it may change the lighting back.</li>
+  <li>Turn this off if you notice stuttering.</li>
+  <li>Wireless mice dim their lights to save battery, and colors may look a little different from the board's light.</li>
+  <li>Logitech mice go back to their own lighting when you turn the option off or unplug them. Some Razer mice keep the color until
+    you change it with Razer's software.</li>
+</ul>
+<h3 id="log">Debug log</h3>
+<p>Settings › <b>Troubleshooting</b> shows messages from the board and the page.</p>
+<table>
+  <tr><th>Color</th><th>Meaning</th></tr>
+  <tr><td>Green</td><td>Success: connected, device attached, mappings saved.</td></tr>
+  <tr><td>Normal</td><td>Information.</td></tr>
+  <tr><td>Amber</td><td>Warnings.</td></tr>
+  <tr><td>Red</td><td>Errors.</td></tr>
+  <tr><td>Gray</td><td>Input events (with Verbose on).</td></tr>
+</table>
+<p>The buttons above the log:</p>
+<ul>
+  <li><b>Verbose</b>: logs every press and release and what it became, e.g. <code>Mouse Back (side) ▼ down → Left Ctrl+C</code>.
+    It's saved on the board; turn it off when you don't need it.</li>
+  <li><b>Auto-scroll</b>, <b>Copy</b> (for sending the log with a problem report) and <b>Clear</b>.</li>
+  <li><b>Ping</b>: checks the connection.</li>
+  <li><b>USB scan</b>, <b>Restart USB-A port</b> and <b>Measure smoothness</b>: see <a href="#trouble">Troubleshooting</a>.</li>
+</ul>
+
+<h2 id="devicepanel">17. Device panel, names and battery</h2>
+<p>Once connected, click the connection pill (or the battery) for the <b>device panel</b>: what's plugged into the USB-A port, its
+name and USB ID, its battery, the firmware version, <b>Show this device as</b>, <b>Get device info</b>, <b>Read battery</b> and
+<b>Disconnect</b>.</p>
+<ul>
+  <li><b>Show this device as</b> gives the device your own name, e.g. the keyboard behind a receiver that only reports its own
+    name. It's used on the page and the status display. <b>Clear</b> goes back to the automatic name.</li>
+  <li><b>Get device info</b> writes the board's full details to the debug log: the firmware, what the device reports, the
+    profiles, memory and more. Useful for problem reports.</li>
+</ul>
+<h3 id="battery">Battery level</h3>
+<p>For wireless mice and keyboards that report it, the battery level shows in the top bar (with a lightning bolt while charging,
+amber at 30 % or less, red at 15 % or less) and in the device panel. It's read a few seconds after the device is plugged in and then
+every few minutes. It works with Razer wireless mice, Logitech devices on a Bolt, Unifying or Lightspeed receiver, and devices
+that report their battery in the standard way. Keychron keyboards on the Keychron Link dongle don't report it.</p>
+<ul>
+  <li>Some Logitech devices only give a rough level; the page then shows “about …”.</li>
+  <li>A sleeping mouse can't answer: the last level stays, dimmed and marked <i>last known</i>, until the mouse is used again.</li>
+  <li>If nothing works, the panel says <i>battery not reported</i>. <b>Read battery</b> checks right away and writes the details
+    to the log.</li>
+</ul>
+
+<h2 id="msc">18. The CIRCUITPY drive and updating</h2>
+<p>The board saves your profiles on its CIRCUITPY drive, so your computer can only read it. Settings › Board › <b>CIRCUITPY
+drive</b> sets whether the computer sees it: <b>Shown</b> (read-only, the default) or <b>Hidden</b>. The change takes effect after
+a restart, and the page works either way.</p>
+<h3 id="updatemode">Update mode: installing a new version</h3>
+<ol>
+  <li>Settings › Board › <b>Update mode…</b>. The board restarts with the drive open to your computer, and an orange bar on the page
+    says so.</li>
+  <li>Copy the new files onto CIRCUITPY and wait for the copy to finish. Don't restart the board before that.</li>
+  <li>Click <b>Restart board</b> on the orange bar (or press RESET).</li>
+</ol>
+<p>Copy the page (<code>remapper.html</code> and <code>help.html</code>) from the same download as the board files: the log warns
+when they don't match. In Update mode the remapping works, but profile changes can't be saved.</p>
+<h3 id="recovery">If you can't reach the page</h3>
+<ul>
+  <li><b>Recovery jumper:</b> connect pin <b>D5</b> to <b>GND</b> and press RESET. The board starts with keyboard, mouse and media
+    keys, the default names and the drive open to your computer, so you can connect and fix the settings. Remove the jumper
+    afterwards.</li>
+  <li><b>Safe mode:</b> press RESET, then press it again while the light blinks yellow. The drive appears but the remapper doesn't
+    run; press RESET to leave.</li>
+</ul>
+
+<h2 id="trouble">19. Troubleshooting</h2>
+<table>
+  <tr><th>Problem</th><th>Try this</th></tr>
+  <tr><td>Connect does nothing, or “Web Serial is not available”</td><td>Use desktop Chrome, Edge or Opera.</td></tr>
+  <tr><td>The board isn't in the port list</td><td>Check the USB-C cable carries data (some are charge-only). Press RESET.</td></tr>
+  <tr><td>“No answer from the remapper firmware”</td><td>See <a href="#connect">Connecting</a>.</td></tr>
+  <tr><td>“Firmware stopped with an error”, or the light flashes red twice, over and over</td><td>The firmware couldn't start; the
+    debug log shows the error. Make sure no old <code>.py</code> copies of firmware files are on the drive (other than
+    <code>code.py</code> and <code>boot.py</code>), then press RESET. If the log stays empty, start with the
+    <a href="#recovery">recovery jumper</a> and connect again.</td></tr>
+  <tr><td><i>MemoryError</i> or <i>not enough free memory</i></td><td>Unplug and replug the board. Turning off Mouse lighting frees memory. If it keeps happening, copy the log for a problem report.</td></tr>
+  <tr><td>The device shows “nothing connected”</td><td>Click <b>USB scan</b> (below). Only mice, keyboards and media-key devices are
+    used.</td></tr>
+  <tr><td>A device only connects sometimes</td><td>Click <b>Restart USB-A port</b> in Settings › Troubleshooting, a few times if
+    needed. Or press RESET with the device plugged in. A powered USB hub between the device and the board can help.</td></tr>
+  <tr><td>A wired mouse keeps disconnecting</td><td>It's charging from the board. Use its wireless receiver.</td></tr>
+  <tr><td>A button I want to remap isn't listed</td><td>Press it once while connected. If you removed it from the list, pressing it
+    brings it back.</td></tr>
+  <tr><td>Side buttons still type 1, 2, 3…</td><td>Remap the <i>Keys sent by the mouse</i> rows, not <i>Keyboard keys</i>.</td></tr>
+  <tr><td>Scroll wheel or tilt can't be remapped</td><td>Click <b>Get device info</b>. If the device is read in <i>boot</i> mode, it
+    doesn't report its wheel to the board; buttons and movement still work.</td></tr>
+  <tr><td>Buttons suddenly do something else</td><td>A profile or layer switch happened. Check which profile is <i>Active on
+    device</i> and which layer has the green dot.</td></tr>
+  <tr><td>Something stays pressed</td><td>It may be <a href="#latch">latched</a>: press the same input again, or an Unlatch input.
+    Unplugging the device or clicking Apply also releases everything.</td></tr>
+  <tr><td>Tilting the wheel repeats the action</td><td>Select the tilt and tick <b>Tilt acts like a held button</b>.</td></tr>
+  <tr><td>Pedal buttons do nothing</td><td>Turn on Foot pedal in What your computer sees, and reboot.</td></tr>
+  <tr><td>Mouse and keyboard stopped working after turning on the pedal</td><td>Only Foot pedal is ticked. Tick Keyboard and Mouse
+    and reboot, or use the <a href="#recovery">recovery jumper</a>.</td></tr>
+  <tr><td>Mappings gone after a restart</td><td>They were applied without saving. Click <b>Apply</b>.</td></tr>
+  <tr><td>Can't copy files to CIRCUITPY</td><td>Use <a href="#updatemode">Update mode</a>.</td></tr>
+  <tr><td>CIRCUITPY drive doesn't appear</td><td>It's set to <b>Hidden</b> (Settings › Board).</td></tr>
+</table>
+<h3 id="smooth">Jerky or stuttering movement</h3>
+<ul>
+  <li>Turn off <b>Verbose</b> in the debug log.</li>
+  <li>Turn off <b>Mouse lighting</b>.</li>
+  <li>Close the page, or click Disconnect, when you aren't using it.</li>
+</ul>
+<p>To check, click <b>Measure smoothness</b> in Settings › Troubleshooting and use the mouse normally for 10 seconds. The log then
+reports how smoothly the board kept up: <i>mouse reports sent to the computer</i> should be close to 125 a second while you move
+the mouse, with few that <i>waited</i>. Copy the log if you report a problem.</p>
+<h3>USB scan</h3>
+<p><b>USB scan</b> lists everything on the USB-A port in the debug log:</p>
+<ul>
+  <li><b>“0 device(s)”</b>: the device didn't answer. Unplug and replug it, or try it through a powered USB hub.</li>
+  <li><b>Listed but “not attached”</b>: the board couldn't use it. It retries for a few seconds after plugging in.</li>
+  <li><b>“understood: nothing usable”</b>: the device isn't a standard mouse or keyboard.</li>
+</ul>
+<p>If a device still doesn't work, copy the log after a scan and include it in a problem report.</p>
+</div>
+<button class="themebtn" id="themeBtn" type="button"></button>
+<script>
+(function () {
+  var order = ["auto", "light", "dark"], names = { auto: "Theme: Auto", light: "Theme: Light", dark: "Theme: Dark" };
+  var btn = document.getElementById("themeBtn");
+  function get() { try { return localStorage.getItem("remap-theme") || "auto"; } catch (e) { return "auto"; } }
+  function apply(theme) {
+    if (theme === "auto") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", theme);
+    btn.textContent = names[theme];
+    btn.title = "Click to switch: Auto (follows your computer) → Light → Dark";
+  }
+  btn.onclick = function () {
+    var next = order[(order.indexOf(get()) + 1) % order.length];
+    try { localStorage.setItem("remap-theme", next); } catch (e) {}
+    apply(next);
+  };
+  window.addEventListener("storage", function (e) { if (e.key === "remap-theme") apply(get()); });
+  apply(get());
+})();
+</script>
+</body>
+</html>
