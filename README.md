@@ -5,6 +5,10 @@ Adafruit Feather RP2040 with USB Type A Host: plug your mouse or
 keyboard into the board, plug the board into your computer, and set everything up from a web page. Your
 mappings are stored on the board, so they work on any computer with no software installed.
 
+> **Built with AI:** this project was created entirely with Claude Opus 5.5, Anthropic's AI, from start to
+> finish. Claude wrote the firmware, the configuration page and the documentation; the project's owner described
+> what was wanted, tested it on real hardware and reported back what needed fixing.
+
 ## Features
 
 - Remap any mouse button, wheel direction, wheel tilt, keyboard key or media key, and buttons wired to the board.
