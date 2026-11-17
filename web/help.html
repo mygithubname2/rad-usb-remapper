@@ -436,15 +436,16 @@ time. Unmapped, they keep typing their key. Press each side button once to add i
 </ul>
 
 <h2 id="boardbuttons">12. Buttons on the board</h2>
-<p>You can add your own buttons to the board and remap them like any other input. The board's <b>BOOT</b> button works too.</p>
+<p>You can add your own buttons to the board and remap them like any other input. The board's <b>BOOT</b> button works too:
+until you map it to something else, pressing it opens the Rad USB Remapper page in your browser, using Win+R (Windows).</p>
 <ul>
   <li><b>Wiring:</b> connect a button between a free pin and <b>GND</b>; no resistor is needed. Free pins: <b>A0–A3, D24, D25, SCK,
     MO, MI, RX, TX, D4, D6, D9, D10, D11, D12</b>. Leave <b>SDA/SCL</b> (status display), <b>D5</b> (recovery jumper) and <b>D13</b>
     alone.</li>
   <li>A button appears in the list under <i>Buttons on the board</i> the first time you press it, named after its pin (e.g.
-    <i>Board button D9</i>). Until you map it, it does nothing.</li>
-  <li>Board-button mappings are part of each device's profiles, so they only work with a device plugged in, and can do different
-    things with different devices.</li>
+    <i>Board button D9</i>). Until you map it, it does nothing (except BOOT, which opens this page).</li>
+  <li>Board-button mappings are part of each device's profiles, so they can do different things with different devices. BOOT's
+    page opening also works with no device plugged in.</li>
   <li>Holding BOOT while the board starts opens the bootloader instead; tap RESET to start normally.</li>
   <li>To use the pins for something else, turn off Settings › Board › <i>Advanced: buttons on the board's pins</i>.</li>
 </ul>

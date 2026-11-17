@@ -1012,10 +1012,12 @@ const describeAction = a => {
 };
 const actionText = a => (a && a.step ? `Step ${a.step[0]} of ${a.step[1]}: ` : "") +
   ((a && a.l) || describeAction(a)) + (a && a.k ? " (latched)" : "") + (a && a.h != null ? " + pulse" : "");
+// the board's BOOT button (GPIO 7): unmapped, it opens this page (remap.BOOT_DEFAULT)
+const BOOT_BUTTON = 7;
 function defaultText(table, code) {
   if (table === "move") return "Moves the pointer";
   if (table === "media") return mediaName(code);
-  if (table === "board") return "Nothing";
+  if (table === "board") return code === BOOT_BUTTON ? "Opens the Rad USB Remapper page (Win+R)" : "Nothing";
   if (table !== "mouse") return "Types " + keyName(code);
   return ({ [TILT_LEFT]: "Scroll left", [TILT_RIGHT]: "Scroll right", [WHEEL_UP]: "Scroll up", [WHEEL_DOWN]: "Scroll down" }[code]
     || (code < 8 ? MOUSE_TARGETS[code][1] : "Nothing (no matching button)"));
@@ -1843,7 +1845,7 @@ const STEP_LISTS = ["cycle", "macro"];
 const isSteps = a => !!a && STEP_LISTS.includes(a.t) && Array.isArray(a.v);
 // The page and the firmware are released together: a board with other firmware gets a warning in the
 // log (no older-firmware fallbacks are kept)
-const PAGE_FW = "3.40";
+const PAGE_FW = "3.41";
 // a cycle's steps: output actions only (settings_store.CYCLE_STEP_TYPES); a macro's may also wait
 const CYCLE_STEPS = 8, MACRO_STEPS = 16;
 const STEP_TABS = [["key", "Keys"], ["text", "Text"], ["mouse", "Mouse"], ["media", "Media"], ["scroll", "Scroll"],
@@ -1890,7 +1892,7 @@ function renderInspector(items) {
   const inh = inheritedOf(it);
   $("inDefault").textContent = (inh ? "On this layer by default: " + actionText(inh) + " (from Base)" : "Default: " + defaultText(it.table, it.code)) +
     (it.table === "mkeys" ? " · sent by the mouse" : it.table === "keys" ? " · keyboard" : it.table === "media" ? " · media key"
-      : it.table === "board" ? " · wired to the board, does nothing until you map it" : "");
+      : it.table === "board" ? (it.code === BOOT_BUTTON ? " · the board's BOOT button" : " · wired to the board, does nothing until you map it") : "");
   $("btnRestore").disabled = !itemMapped(it);
   const mappedSomewhere = itemMappedAnywhere(it);
   $("btnHide").disabled = mappedSomewhere;

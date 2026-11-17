@@ -16,7 +16,8 @@
 #              buttons often type 1, 2, 3...) -- kept apart from keyboard keys
 #   "consumer" media keys from the input device (profile table "media")
 #   "board"    buttons wired to the board's own pins (code = GPIO number; 7 = BOOT button).
-#              Unmapped they do nothing (boardbuttons.py)
+#              Unmapped they do nothing (boardbuttons.py), except BOOT: it opens the
+#              configuration page (BOOT_DEFAULT)
 #
 # Actions:
 #   {"t": "mouse",  "v": mask}            mouse buttons (bit 0 = left ... bit 7)
@@ -179,8 +180,13 @@ def _media_default(code, _orig):
 _NOTHING = {"t": "none", "v": 0}
 
 
+BOOT_BUTTON = 7               # the board's BOOT button (GPIO 7)
+# unmapped, BOOT opens the configuration page (Win+R: the Run box, so in the default browser)
+BOOT_DEFAULT = {"t": "web", "v": ["https://mygithubname2.github.io/rad-usb-remapper/web/remapper.html", 0]}
+
+
 def _board_default(code, _orig):
-    return _NOTHING
+    return BOOT_DEFAULT if code == BOOT_BUTTON else _NOTHING
 
 
 from settings_store import unpack_action   # (mappings are kept packed: see action())

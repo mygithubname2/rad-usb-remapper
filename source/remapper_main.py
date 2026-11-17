@@ -175,7 +175,7 @@ except (MemoryError, ImportError) as _err:   # optional feature: never stop the 
             return []
 _mark("battery (vendor readers load when needed)")
 
-FW_VERSION = "3.40.1"
+FW_VERSION = "3.41.0"
 HISTORY = 24               # debug lines kept for replay when the page connects...
 HISTORY_CHARS = 1600       # ...and at most this much text (the lines took up to ~6 KB of memory)
 supervisor.runtime.autoreload = True
